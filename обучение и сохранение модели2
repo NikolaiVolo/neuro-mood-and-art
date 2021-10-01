@@ -1,0 +1,150 @@
+
+import scipy
+import scipy.signal
+import csv
+import tensorflow as tf
+from sklearn.metrics import confusion_matrix
+import numpy as np
+from scipy.io import loadmat
+import os
+from pywt import wavedec
+from functools import reduce
+from scipy import signal
+from scipy.stats import entropy
+from scipy.fft import fft, ifft
+import pandas as pd
+from sklearn.model_selection import train_test_split, StratifiedKFold
+from sklearn.preprocessing import StandardScaler
+from tensorflow import keras as K
+import matplotlib.pyplot as plt
+import scipy
+from sklearn import metrics
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import KFold,cross_validate
+from tensorflow.keras.layers import Dense, Activation, Flatten, concatenate, Input, Dropout, LSTM, Bidirectional,BatchNormalization,PReLU,ReLU,Reshape
+from keras.wrappers.scikit_learn import KerasClassifier
+from sklearn.metrics import classification_report
+from tensorflow.keras.models import Sequential, Model, load_model
+import matplotlib.pyplot as plt;
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
+from sklearn.decomposition import PCA
+from sklearn.metrics import accuracy_score
+from tensorflow import keras
+from tensorflow.keras.layers import Conv1D,Conv2D,Add
+from tensorflow.keras.layers import MaxPool1D, MaxPooling2D
+import seaborn as sns
+import pandas as pd
+import torch
+import torchvision
+import torchvision.models as models
+from PIL import Image
+
+
+
+data = pd.read_csv("/content/mindMonitor.csv")
+print(data.info())
+
+def prepare_recording(filename, cls):
+  # Считать табличку
+  data = pd.read_csv(filename)
+  
+  # Отбросить лишние колонки 
+  data = data.loc[:, "Delta_TP9":"Gamma_TP10"]
+
+  # Создаём колонку с номером класса
+  data['Class'] = cls
+
+  # Заменяем все inf на Nan
+  data_m = data.replace([np.inf, -np.inf], np.nan)
+
+  # Выбрасываем NaN
+  data_m = data_m.dropna(0)
+
+  # Считаем среднее
+  data_m = data_m.mean(0)
+  return data_m
+
+data_2negative = prepare_recording("/content/drive/MyDrive/POSITIVE_2021-09-29--11-54-37.csv", 0)
+
+data_3 = prepare_recording("/content/drive/MyDrive/POSITIVEV2_2021-09-29--16-15-25.csv", 0)
+
+data_4 = prepare_recording("/content/drive/MyDrive/POSITIVE_3.csv", 0)
+
+data_5 = prepare_recording("/content/drive/MyDrive/NEUTRAL_2021-09-29--12-12-51.csv", 1)
+
+data_6 = prepare_recording("/content/drive/MyDrive/NEUTRALV2_2021-09-29--15-55-06.csv", 1)
+
+try:
+   data_7 = prepare_recording("/content/drive/MyDrive/NEUTRAL_3.csv", 1)
+except:
+  pass
+
+data_8 = prepare_recording("/content/drive/MyDrive/NEGATIVE_2021-09-29--12-06-00.csv", 2)
+
+data_9 = prepare_recording("/content/drive/MyDrive/NEGATIVEV2_2021-09-29--15-50-58.csv", 2)
+
+data_10 = prepare_recording("/content/drive/MyDrive/NEGATIVE_3.csv", 2)
+
+import pickle
+
+all_data = pd.concat([data_2negative, data_3, data_4, data_5, data_6, data_8, data_9, data_10], ignore_index=True, axis=1)
+
+all_data_2 = pd.concat([data_2negative, data_3, data_4], ignore_index=True)
+
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.pipeline import Pipeline
+from sklearn.metrics import roc_curve, roc_auc_score, classification_report, accuracy_score, confusion_matrix 
+import seaborn as sns
+import matplotlib.pyplot as plt
+
+file_name = "/content/mindMonitor.csv"
+file_name_2 = "/content/mindMonitor_a.csv"
+
+data = pd.read_csv(file_name)
+
+#df.replace(to_replace ="NaN", value ="")
+
+
+cl_data = all_data.dropna(1).dropna(0)
+
+all_data = all_data.transpose()
+
+cl_data.to_csv('d_set')
+
+!pip install catboost
+
+from catboost import CatBoostClassifier
+
+from sklearn.model_selection import train_test_split
+
+# Выделяем X и y
+X = all_data.drop(columns=['Class'])
+y = all_data['Class'].astype(int)
+X_train, X_test, y_train, y_test = train_test_split(X, y, train_size=0.8)
+
+# Cоздаём модель
+clf = CatBoostClassifier()
+clf.fit(X_train, y_train)
+
+# Много раз обучаем на разных кусках данных и оцениваем качество
+scores = accuracy_score(clf.predict(X_test), y_test)
+
+# Выводим среднее качество
+print(scores)
+
+all_data
+
+
+result = clf.predict(X)
+print(result)
+
+with open('/content/drive/MyDrive/Tesla_model_S.pkl', 'wb') as f:
+  pickle.dump(clf, f)
+
