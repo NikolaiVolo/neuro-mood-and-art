@@ -1,0 +1,70 @@
+!pip install Pillow
+!pip install catboost
+
+import pickle
+from catboost import CatBoostClassifier
+def prepare_recording(filename):
+  # Считать табличку
+  data_11 = pd.read_csv(filename)
+  
+  # Отбросить лишние колонки 
+  data_11 = data_11.loc[:, "Delta_TP9":"Gamma_TP10"]
+
+  # Заменяем все inf на Nan
+  data_m = data_11.replace([np.inf, -np.inf], np.nan)
+
+  # Выбрасываем NaN
+  data_m = data_m.dropna(0)
+
+  # Считаем среднее
+  data_m = data_m.mean(0)
+  return data_m
+  data_11 = prepare_recording("/content/drive/MyDrive/mindMonitor_2021-09-27--20-34-42.csv")
+with open('/content/drive/MyDrive/Tesla_model_S.pkl', 'rb') as f:
+  model = pickle.load(f)
+  from sklearn.model_selection import train_test_split
+
+  result = model.predict(data_11)
+print(result)
+
+if (2 in result):
+    print("negative")
+
+elif "1" in result:
+    print("neutrall")
+
+else:
+    print("positive")
+
+mode = result #mood.
+image = Image.open("/content/drive/MyDrive/Cartoons_All_Penguins_of_Madagascar_088799_.jpg") #image opens.
+draw = ImageDraw.Draw(image) #draw instrument.
+width = image.size[0] #width.
+height = image.size[1] #height. 
+pix = image.load() #pixels.
+
+if (2 in mode): #neg=negative.
+ for i in range(width):
+  for j in range(height):
+   a = pix[i, j][0]
+   b = pix[i, j][1]
+   c = pix[i, j][2]
+   d = 0
+   draw.point((i, j), (0, b-40, c-40))
+elif (1 in mode): #neu=neutral.
+ for i in range(width):
+  for j in range(height):
+   a = pix[i, j][0]
+   b = pix[i, j][1]
+   c = pix[i, j][2]
+   d = 0
+   draw.point((i, j), (a,b ,150 ))
+elif (0 in mode): #pos=positive.
+ for i in range(width):
+  for j in range(height):
+   a = pix[i, j][0]
+   b = pix[i, j][1]
+   c = pix[i, j][2]
+   d = 0
+   draw.point((i, j), (a, b, 10))
+image
